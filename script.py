@@ -9,18 +9,17 @@ import time
 
 def start(url):
 
-    pagenumber = 2
+    pagenumber = 6
 
     fw = open('testdata.txt', 'w')
 
-    for p in range (1, pagenumber + 1):
-        print ('page',p)
-        html=None
 
-        if p==1:
-            pageLink=url # url for page 1
-        elif p == 2:
-            pageLink=url+'10' # make the page url
+    for page in range(1,pagenumber + 1): # for each page
+        print ('page',page)
+
+        html=None
+        pageLink=url + str(page)
+
 
         for i in range(5): # try 5 times
             try:
@@ -36,12 +35,14 @@ def start(url):
 
         soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
 
-        datum = soup.findAll('td', {'id': 'resultsCol'})
+        datum = soup.findAll('div', attrs = {'class': 'job-row'})
+
+        #print(datum)
 
         for data in datum:
 
             test = 'NA'
-            testChunk=data.find('div',{'class':'row result'})
+            testChunk=data.find('div',{'class': 'columns large-2 medium-3 small-12'})
             if testChunk:
                 test=testChunk.text
                 print(test)
@@ -52,5 +53,5 @@ def start(url):
     fw.close()
 
 if __name__ == "__main__":
-    url = "https://www.indeed.com/jobs?q=business+analyst&l=New+York,+NY&start="
+    url = "http://www.careerbuilder.com/jobs-data-analyst?page_number="
     start(url)
