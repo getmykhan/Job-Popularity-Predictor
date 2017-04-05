@@ -9,7 +9,7 @@ from selenium import webdriver
 
 def run(url):
     dictio=set()
-    pagenumber = 2
+    pagenumber = 1
 
 
     for page in range(1,pagenumber + 1): # for each page
@@ -53,34 +53,35 @@ def run(url):
     fw = open('testdata.txt', 'a+')
     url = "http://www.careerbuilder.com"
     print(dictio)
-    
-"""
-    for value in dictio:
-        #print(value)
-        try:
-            #use the browser to access the url
-            response=requests.get(url + value)
-            html=response.content # get the html
-            #print(html)
-            soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
-            #print(soup)
-            #driver.get(url + value)
-            time.sleep(5)
-            applicant = 'NA'
-            applicantChunk=soup.find('div',{'class': 'application-count'})
-            #print(applicantChunk)
-            if applicantChunk:
-                applicant=applicantChunk.text
-                print(applicant)
-            fw.write(applicant+'\t')
-            break # we got the file, break the loop
-        except Exception as e:# browser.open() threw an exception, the attempt to get the response failed
-            print ('failed attempt',Exception)
-                #time.sleep(2) # wait 2 secs
-        fw.close()
 
-"""
+
+    for value in sorted(dictio):
+        #use the browser to access the url
+        response = requests.get(url + value)
+        html = response.content # get the html
+        #print(html)
+        soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
+        #print(soup)
+        #driver.get(url + value)
+        applicant, date = 'NA', 'NA'
+        applicantChunk=soup.find('div',{'class': 'application-count'})
+        #print(applicantChunk)
+        if applicantChunk:
+            applicant=applicantChunk.text
+        dateChunk = soup.find('h3', {'id': 'job-begin-date'})
+        if dateChunk:
+            date = dateChunk.text
+            print(applicant , date)
+        fw.write(applicant+'\t'+ date +'\n')
+        time.sleep(5)
+    time.sleep(2)
+    fw.close()
+
+
 
 if __name__ == "__main__":
     url = "http://www.careerbuilder.com/jobs-data-analyst?page_number="
     run(url)
+
+
+#Note: Because I have put the links in a set, it will be randomly selected
