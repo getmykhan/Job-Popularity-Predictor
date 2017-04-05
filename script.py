@@ -1,4 +1,4 @@
-## Version  1.9.10
+## Version  1.9.12
 ## Author : Mohammed Yusuf
 
 from bs4 import BeautifulSoup
@@ -9,7 +9,7 @@ from selenium import webdriver
 
 def run(url):
     dictio=set() #hold all the links scraped.
-    pagenumber = 1 #number of pages to scrape
+    pagenumber = 50 #number of pages to scrape
 
 
     for page in range(1,pagenumber + 1):
@@ -49,11 +49,11 @@ def run(url):
 
             time.sleep(2)
 
-    fw = open('testdata.txt', 'a+')
+    fw = open('testdata.txt', 'a+') #testdata file in read/write mode
     url = "http://www.careerbuilder.com"
     print(dictio)
 
-
+    print("Scraping...")
     for value in sorted(dictio):
         response = requests.get(url + value)
         html = response.content
@@ -62,15 +62,15 @@ def run(url):
         #print(soup)
         #driver.get(url + value)
         applicant, date = 'NA', 'NA'
+        # applicant number
         applicantChunk=soup.find('div',{'class': 'application-count'})
         #print(applicantChunk)
-        if applicantChunk:
-            applicant=applicantChunk.text
+        if applicantChunk:applicant=applicantChunk.text
+
+        #Date when the job was posted
         dateChunk = soup.find('h3', {'id': 'job-begin-date'})
-        if dateChunk:
-            date = dateChunk.text
-            print(applicant , date)
-        fw.write(applicant +'\t' + date +'\n')
+        if dateChunk:date = dateChunk.text
+        fw.write(applicant + '\t' + date + '\n')
         time.sleep(5)
     time.sleep(2)
     fw.close()
