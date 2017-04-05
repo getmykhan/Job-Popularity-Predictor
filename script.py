@@ -9,7 +9,7 @@ from selenium import webdriver
 
 def run(url):
     dictio=set()
-    pagenumber = 1
+    pagenumber = 2
 
 
     for page in range(1,pagenumber + 1): # for each page
@@ -45,38 +45,41 @@ def run(url):
                 test=testChunk.text
                 dictio.add(testChunk.get('href'))
                 print(test)
-                print(dictio)
+                #print(dictio)
             #fw.write(test+'\t')
 
             time.sleep(2)
 
-        fw = open('testdata.txt', 'a+')
-        url = "http://www.careerbuilder.com"
-        for value in dictio:
-            #print(value)
-            try:
-                #use the browser to access the url
-                response=requests.get(url + value)
-                html=response.content # get the html
-                #print(html)
-                soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
-                #print(soup)
-                #driver.get(url + value)
-                time.sleep(5)
-                applicant = 'NA'
-                applicantChunk=soup.find('div',{'class': 'application-count'})
-                #print(applicantChunk)
-                if applicantChunk:
-                    applicant=applicantChunk.text
-                    print(applicant)
-                fw.write(applicant+'\t')
-                break # we got the file, break the loop
-            except Exception as e:# browser.open() threw an exception, the attempt to get the response failed
-                print ('failed attempt',Exception)
-                    #time.sleep(2) # wait 2 secs
-            fw.close()
+    fw = open('testdata.txt', 'a+')
+    url = "http://www.careerbuilder.com"
+    print(dictio)
+    
+"""
+    for value in dictio:
+        #print(value)
+        try:
+            #use the browser to access the url
+            response=requests.get(url + value)
+            html=response.content # get the html
+            #print(html)
+            soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
+            #print(soup)
+            #driver.get(url + value)
+            time.sleep(5)
+            applicant = 'NA'
+            applicantChunk=soup.find('div',{'class': 'application-count'})
+            #print(applicantChunk)
+            if applicantChunk:
+                applicant=applicantChunk.text
+                print(applicant)
+            fw.write(applicant+'\t')
+            break # we got the file, break the loop
+        except Exception as e:# browser.open() threw an exception, the attempt to get the response failed
+            print ('failed attempt',Exception)
+                #time.sleep(2) # wait 2 secs
+        fw.close()
 
-
+"""
 
 if __name__ == "__main__":
     url = "http://www.careerbuilder.com/jobs-data-analyst?page_number="
