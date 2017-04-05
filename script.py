@@ -1,4 +1,4 @@
-## Version  1.9.12
+## Version  2.1.0
 ## Author : Mohammed Yusuf
 
 from bs4 import BeautifulSoup
@@ -9,7 +9,7 @@ from selenium import webdriver
 
 def run(url):
     dictio=set() #hold all the links scraped.
-    pagenumber = 50 #number of pages to scrape
+    pagenumber = 2 #number of pages to scrape
 
 
     for page in range(1,pagenumber + 1):
@@ -61,7 +61,11 @@ def run(url):
         soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
         #print(soup)
         #driver.get(url + value)
-        applicant, date = 'NA', 'NA'
+        jobname, applicant, date = 'NA', 'NA', 'NA'
+        # Job Title (Complete Title)
+        jobnameChunk = soup.find('div', {'class': 'small-12 item'})
+        if jobnameChunk:jobname = jobnameChunk.text
+
         # applicant number
         applicantChunk=soup.find('div',{'class': 'application-count'})
         #print(applicantChunk)
@@ -70,7 +74,7 @@ def run(url):
         #Date when the job was posted
         dateChunk = soup.find('h3', {'id': 'job-begin-date'})
         if dateChunk:date = dateChunk.text
-        fw.write(applicant + '\t' + date + '\n')
+        fw.write(jobname + '\t' + applicant + '\t' + date + '\n')
         time.sleep(5)
     time.sleep(2)
     fw.close()
