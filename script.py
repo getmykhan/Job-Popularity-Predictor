@@ -34,9 +34,22 @@ def start(url):
 
         if not html:continue
 
+        soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
 
+        datum = soup.findAll('td', {'id': 'resultsCol'})
 
+        for data in datum:
 
+            test = 'NA'
+            testChunk=data.find('div',{'class':'row result'})
+            if testChunk:
+                test=testChunk.text
+                print(test)
+            fw.write(test+'\t')
+
+            time.sleep(2)
+
+    fw.close()
 
 if __name__ == "__main__":
     url = "https://www.indeed.com/jobs?q=business+analyst&l=New+York,+NY&start="
