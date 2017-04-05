@@ -1,5 +1,5 @@
-## Version  1.7.10
-
+## Version  1.9.10
+## Author : Mohammed Yusuf
 
 from bs4 import BeautifulSoup
 import time
@@ -8,32 +8,31 @@ import re
 from selenium import webdriver
 
 def run(url):
-    dictio=set()
-    pagenumber = 1
+    dictio=set() #hold all the links scraped.
+    pagenumber = 1 #number of pages to scrape
 
 
-    for page in range(1,pagenumber + 1): # for each page
+    for page in range(1,pagenumber + 1):
         print ('page',page)
 
         html=None
         pageLink=url + str(page)
 
 
-        for i in range(5): # try 5 times
+        for i in range(5):
             try:
-                    #use the browser to access the url
                 response=requests.get(pageLink,headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36', })
-                html=response.content # get the html
-                break # we got the file, break the loop
-            except Exception as e:# browser.open() threw an exception, the attempt to get the response failed
+                html=response.content
+                break
+            except Exception as e:
                 print ('failed attempt',i)
-                time.sleep(2) # wait 2 secs
+                time.sleep(2)
 
         if not html:continue
 
-        soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
+        soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml') #decode html
 
-        datum = soup.findAll('div', attrs = {'class': 'job-row'})
+        datum = soup.findAll('div', attrs = {'class': 'job-row'}) #find all
 
         #print(datum)
 
@@ -56,9 +55,8 @@ def run(url):
 
 
     for value in sorted(dictio):
-        #use the browser to access the url
         response = requests.get(url + value)
-        html = response.content # get the html
+        html = response.content
         #print(html)
         soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
         #print(soup)
@@ -72,7 +70,7 @@ def run(url):
         if dateChunk:
             date = dateChunk.text
             print(applicant , date)
-        fw.write(applicant+'\t'+ date +'\n')
+        fw.write(applicant +'\t' + date +'\n')
         time.sleep(5)
     time.sleep(2)
     fw.close()
