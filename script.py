@@ -9,7 +9,7 @@ from selenium import webdriver
 
 def run(url):
     dictio=set() #hold all the links scraped.
-    pagenumber = 2 #number of pages to scrape
+    pagenumber = 100 #number of pages to scrape
 
 
     for page in range(1,pagenumber + 1):
@@ -49,7 +49,7 @@ def run(url):
 
             time.sleep(2)
 
-    fw = open('testdata.txt', 'a+') #testdata file in read/write mode
+    fw = open('traindata.txt', 'a+') #testdata file in read/write mode
     url = "http://www.careerbuilder.com"
     print(dictio)
 
