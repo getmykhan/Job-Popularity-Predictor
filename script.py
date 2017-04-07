@@ -9,10 +9,10 @@ from selenium import webdriver
 
 def run(url):
     dictio=set() #hold all the links scraped.
-    pagenumber = 100 #number of pages to scrape
+    pagenumber = 2 #number of pages to scrape
 
 
-    for page in range(1,pagenumber + 1):
+    for page in range(1 ,pagenumber + 1):
         print ('page',page)
 
         html=None
@@ -61,7 +61,7 @@ def run(url):
         soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
         #print(soup)
         #driver.get(url + value)
-        jobname, applicant, date = 'NA', 'NA', 'NA'
+        jobname, applicant, date, description = 'NA', 'NA', 'NA', 'NA'
         # Job Title (Complete Title)
         jobnameChunk = soup.find('div', {'class': 'small-12 item'})
         if jobnameChunk:jobname = jobnameChunk.text
@@ -71,10 +71,14 @@ def run(url):
         #print(applicantChunk)
         if applicantChunk:applicant=applicantChunk.text
 
+        descriptionChunk = soup.find('div', {'class': 'description'})
+        if descriptionChunk:
+            description = descriptionChunk.text
+            print(description)
         #Date when the job was posted
         dateChunk = soup.find('h3', {'id': 'job-begin-date'})
         if dateChunk:date = dateChunk.text
-        fw.write(jobname + '\t' + applicant + '\t' + date + '\n')
+        fw.write(jobname + '\t' + applicant + '\t' + date + description +'\n')
         time.sleep(5)
     time.sleep(2)
     fw.close()
