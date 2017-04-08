@@ -1,15 +1,19 @@
-## Version  2.1.0
-## Author : Mohammed Yusuf
+## Version  3.1.7
+## @author: Mohammed Yusuf Khan
 
 from bs4 import BeautifulSoup
 import time
 import requests
 import re
 from selenium import webdriver
+import csv
+import timeit
+
 
 def run(url):
+    starttime = time.time()
     dictio=set() #hold all the links scraped.
-    pagenumber = 2 #number of pages to scrape
+    pagenumber = 100 #number of pages to scrape
 
 
     for page in range(1 ,pagenumber + 1):
@@ -49,8 +53,12 @@ def run(url):
 
             time.sleep(2)
 
-    fw = open('traindata.txt', 'a+') #testdata file in read/write mode
+    #fw = open('traindata.txt', 'a+') #testdata file in read/write mode
     url = "http://www.careerbuilder.com"
+    listtoholdjob = []
+    listtoholdcount = []
+    listtoholddescription = []
+    listtoholddate = []
     print(dictio)
 
     print("Scraping...")
@@ -64,26 +72,71 @@ def run(url):
         jobname, applicant, date, description = 'NA', 'NA', 'NA', 'NA'
         # Job Title (Complete Title)
         jobnameChunk = soup.find('div', {'class': 'small-12 item'})
-        if jobnameChunk:jobname = jobnameChunk.text
+        if jobnameChunk:
+            jobname = jobnameChunk.text
+            listtoholdjob.append(jobname)
 
         # applicant number
         applicantChunk=soup.find('div',{'class': 'application-count'})
         #print(applicantChunk)
-        if applicantChunk:applicant=applicantChunk.text
+        if applicantChunk:
+            applicant=applicantChunk.text
+            listtoholdcount.append(applicant)
 
-        descriptionChunk = soup.find('div', {'class': 'description'})
+        descriptionChunk = soup.find('div', {'class': 'small-12 columns item'})
         if descriptionChunk:
             description = descriptionChunk.text
             print(description)
+            listtoholddescription.append(description)
+        fw = open('descriptiondata.txt', 'a+')
+        fw.write(jobname + '\t' + description)
+        fw.close()
         #Date when the job was posted
+
         dateChunk = soup.find('h3', {'id': 'job-begin-date'})
-        if dateChunk:date = dateChunk.text
-        fw.write(jobname + '\t' + applicant + '\t' + date + description +'\n')
+        if dateChunk:
+            date = dateChunk.text
+            listtoholddate.append(date)
+
         time.sleep(5)
-    time.sleep(2)
-    fw.close()
+        final_listtoholdjob = []
+        final_listtoholddescription = []
+        final_listtoholddate = []
 
+        # To remove "\n" from the list
+        for j in listtoholdjob:
+            final_listtoholdjob.append(j.strip())
 
+        #This part has to be worked on
+        while "\n" in listtoholddescription:
+            listtoholddescription.remove("\n")
+
+        for k in listtoholddescription:
+            final_listtoholddescription.append(k.strip())
+
+        #To remove "\n" from the list
+        for v in listtoholddate:
+            final_listtoholddate.append(v.strip())
+
+        #this part basically when iterated will go in form of column
+        rows = zip(final_listtoholdjob,listtoholdcount, final_listtoholddate)
+
+        with open('train.csv', 'a+') as outcsv: # opening the csv file to push data
+            #configure writer to write standard csv file
+            writer = csv.writer(outcsv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+            #writer.writerow(['Job Title ','Total Applicant', 'Job Description', 'Date'])
+            for row in rows:
+                writer.writerow(row)
+
+        outcsv.close() #close the csv file
+
+        #fw.write(jobname + applicant + date + description +'\n')
+    time.sleep(2) # sleep to scrape without website blocking
+    #fw.close()
+    endtime = time.time()
+    total_time = (endtime - starttime)
+    total_time = (total_time / 3600)
+    print("Total time to execute the script in hours is:", total_time) # Total time taken to run the entire script
 
 if __name__ == "__main__":
     url = "http://www.careerbuilder.com/jobs-data-analyst?page_number="
