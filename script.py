@@ -125,16 +125,16 @@ def run(url):
         for v in listtoholddate:
             final_listtoholddate.append(v.strip())
 
-        rows = zip(final_listtoholdjob,listtoholdcount, final_listtoholddate)
+    rows = zip(final_listtoholdjob,listtoholdcount, final_listtoholddate)
 
-        with open('train.csv', 'a+') as outcsv:
-            #configure writer to write standard csv file
-            writer = csv.writer(outcsv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
-            #writer.writerow(['Job Title ','Total Applicant', 'Job Description', 'Date'])
-            for row in rows:
-                writer.writerow(row)
+    with open('train.csv', 'a+') as outcsv:
+        #configure writer to write standard csv file
+        writer = csv.writer(outcsv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+        #writer.writerow(['Job Title ','Total Applicant', 'Job Description', 'Date'])
+        for row in rows:
+            writer.writerow(row)
 
-        outcsv.close()
+    outcsv.close()
 
         #fw.write(jobname + applicant + date + description +'\n')
     time.sleep(2)
