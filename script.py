@@ -1,4 +1,4 @@
-## Version  3.1.7
+## Version  3.1.9
 ## @author: Mohammed Yusuf Khan
 
 from bs4 import BeautifulSoup
@@ -13,7 +13,8 @@ import timeit
 def run(url):
     starttime = time.time()
     dictio=set() #hold all the links scraped.
-    pagenumber = 100 #number of pages to scrape
+    listo = []
+    pagenumber = 1 #number of pages to scrape
 
 
     for page in range(1 ,pagenumber + 1):
@@ -47,6 +48,7 @@ def run(url):
             if testChunk:
                 test=testChunk.text
                 dictio.add(testChunk.get('href'))
+                listo.append(testChunk.get('href'))
                 print(test)
                 #print(dictio)
             #fw.write(test+'\t')
@@ -59,10 +61,10 @@ def run(url):
     listtoholdcount = []
     listtoholddescription = []
     listtoholddate = []
-    print(dictio)
+    print(listo)
 
     print("Scraping...")
-    for value in sorted(dictio):
+    for value in listo:
         response = requests.get(url + value)
         html = response.content
         #print(html)
@@ -86,11 +88,19 @@ def run(url):
         descriptionChunk = soup.find('div', {'class': 'small-12 columns item'})
         if descriptionChunk:
             description = descriptionChunk.text
-            print(description)
-            listtoholddescription.append(description)
-        fw = open('descriptiondata.txt', 'a+')
-        fw.write(jobname + '\t' + description)
-        fw.close()
+            #print(description)
+        #print(listtoholddescription)
+            fw = open('descriptiondata.txt', 'a+')
+            for line in description:
+                newline = line.rstrip('\r\n')
+                fw.write(newline)
+            #listtoholddescription.add(newline)
+            fw.write("\n")
+            fw.write("\n")
+            #fw.write(jobname + '\t' + description)
+            fw.close()
+
+
         #Date when the job was posted
 
         dateChunk = soup.find('h3', {'id': 'job-begin-date'})
@@ -103,40 +113,36 @@ def run(url):
         final_listtoholddescription = []
         final_listtoholddate = []
 
-        # To remove "\n" from the list
         for j in listtoholdjob:
             final_listtoholdjob.append(j.strip())
 
-        #This part has to be worked on
         while "\n" in listtoholddescription:
             listtoholddescription.remove("\n")
 
         for k in listtoholddescription:
             final_listtoholddescription.append(k.strip())
 
-        #To remove "\n" from the list
         for v in listtoholddate:
             final_listtoholddate.append(v.strip())
 
-        #this part basically when iterated will go in form of column
         rows = zip(final_listtoholdjob,listtoholdcount, final_listtoholddate)
 
-        with open('train.csv', 'a+') as outcsv: # opening the csv file to push data
+        with open('train.csv', 'a+') as outcsv:
             #configure writer to write standard csv file
             writer = csv.writer(outcsv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
             #writer.writerow(['Job Title ','Total Applicant', 'Job Description', 'Date'])
             for row in rows:
                 writer.writerow(row)
 
-        outcsv.close() #close the csv file
+        outcsv.close()
 
         #fw.write(jobname + applicant + date + description +'\n')
-    time.sleep(2) # sleep to scrape without website blocking
+    time.sleep(2)
     #fw.close()
     endtime = time.time()
     total_time = (endtime - starttime)
     total_time = (total_time / 3600)
-    print("Total time to execute the script in hours is:", total_time) # Total time taken to run the entire script
+    print("Total time to execute the script in hours is:", total_time)
 
 if __name__ == "__main__":
     url = "http://www.careerbuilder.com/jobs-data-analyst?page_number="
