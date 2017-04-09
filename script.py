@@ -1,20 +1,18 @@
-## Version  3.1.9
+## Version  4.0.3
 ## @author: Mohammed Yusuf Khan
 
 from bs4 import BeautifulSoup
 import time
 import requests
 import re
-from selenium import webdriver
 import csv
-import timeit
 
 
 def run(url):
     starttime = time.time()
     dictio=set() #hold all the links scraped.
     listo = []
-    pagenumber = 1 #number of pages to scrape
+    pagenumber = 300 #number of pages to scrape
 
 
     for page in range(1 ,pagenumber + 1):
@@ -39,7 +37,6 @@ def run(url):
 
         datum = soup.findAll('div', attrs = {'class': 'job-row'}) #find all
 
-        #print(datum)
 
         for data in datum:
 
@@ -62,6 +59,7 @@ def run(url):
     listtoholddescription = []
     listtoholddate = []
     print(listo)
+    print("length is:", len(listo))
 
     print("Scraping...")
     for value in listo:
@@ -84,12 +82,14 @@ def run(url):
         if applicantChunk:
             applicant=applicantChunk.text
             listtoholdcount.append(applicant)
+            #an.close()
+        else:
+            applicant = "NA"
+            listtoholdcount.append(applicant)
 
         descriptionChunk = soup.find('div', {'class': 'small-12 columns item'})
         if descriptionChunk:
             description = descriptionChunk.text
-            #print(description)
-        #print(listtoholddescription)
             fw = open('descriptiondata.txt', 'a+')
             for line in description:
                 newline = line.rstrip('\r\n')
@@ -110,17 +110,10 @@ def run(url):
 
         time.sleep(5)
         final_listtoholdjob = []
-        final_listtoholddescription = []
         final_listtoholddate = []
 
         for j in listtoholdjob:
             final_listtoholdjob.append(j.strip())
-
-        while "\n" in listtoholddescription:
-            listtoholddescription.remove("\n")
-
-        for k in listtoholddescription:
-            final_listtoholddescription.append(k.strip())
 
         for v in listtoholddate:
             final_listtoholddate.append(v.strip())
@@ -145,7 +138,7 @@ def run(url):
     print("Total time to execute the script in hours is:", total_time)
 
 if __name__ == "__main__":
-    url = "http://www.careerbuilder.com/jobs-data-analyst?page_number="
+    url = "http://www.careerbuilder.com/jobs-analyst?page_number="
     run(url)
 
 
