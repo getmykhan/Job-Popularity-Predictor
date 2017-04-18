@@ -1,4 +1,4 @@
-## Version  4.0.3
+## Version  4.1.1
 ## @author: Mohammed Yusuf Khan
 
 from bs4 import BeautifulSoup
@@ -12,13 +12,14 @@ def run(url):
     starttime = time.time()
     dictio=set() #hold all the links scraped.
     listo = []
-    pagenumber = 300 #number of pages to scrape
+    pagenumber = 1 #number of pages to scrape
 
 
     for page in range(1 ,pagenumber + 1):
         print ('page',page)
 
         html=None
+        print(url)
         pageLink=url + str(page)
 
 
@@ -29,7 +30,7 @@ def run(url):
                 break
             except Exception as e:
                 print ('failed attempt',i)
-                time.sleep(2)
+
 
         if not html:continue
 
@@ -37,6 +38,7 @@ def run(url):
 
         datum = soup.findAll('div', attrs = {'class': 'job-row'}) #find all
 
+        #print(datum)
 
         for data in datum:
 
@@ -69,28 +71,42 @@ def run(url):
         soup = BeautifulSoup(html.decode('ascii', 'ignore'),'lxml')
         #print(soup)
         #driver.get(url + value)
-        jobname, applicant, date, description = 'NA', 'NA', 'NA', 'NA'
+        jobname, applicant, date, description = 'NA', '0', 'NA', 'NA'
         # Job Title (Complete Title)
         jobnameChunk = soup.find('div', {'class': 'small-12 item'})
-        if jobnameChunk:
-            jobname = jobnameChunk.text
-            listtoholdjob.append(jobname)
 
         # applicant number
         applicantChunk=soup.find('div',{'class': 'application-count'})
         #print(applicantChunk)
         if applicantChunk:
             applicant=applicantChunk.text
+            applicant=applicant.strip()
             listtoholdcount.append(applicant)
-            #an.close()
-        else:
-            applicant = "NA"
-            listtoholdcount.append(applicant)
+        descriptionChunk = soup.find('div', {'class': 'description'})
+        #Date when the job was posted
 
-        descriptionChunk = soup.find('div', {'class': 'small-12 columns item'})
+        dateChunk = soup.find('h3', {'id': 'job-begin-date'})
+        if dateChunk:
+            date = dateChunk.text
+            date=date.strip()
+            listtoholddate.append(date)
+            d = {"Posted 10 days ago":10, "Posted 11 days ago":11,"Posted 12 days ago":12,"Posted 13 days ago":13,"Posted 14 days ago":14,"Posted 15 days ago":15,"Posted 16 days ago":16,"Posted 17 days ago":17,"Posted 18 days ago":18,"Posted 19 days ago":19,"Posted 20 days ago":20,"Posted 21 days ago":21,"Posted 22 days ago":22,"Posted 23 days ago":23,"Posted 24 days ago":24,"Posted 25 days ago":25,"Posted 26 days ago":26,"Posted 27 days ago":27,"Posted 28 days ago":28,"Posted 29 days ago":29,"Posted 30 days ago":30}
+            if d.get(date):
+                date=d.get(date)
+                applicant = (int(applicant) // int(date))
+            else:
+                continue
+
+        if jobnameChunk:
+            jobname = jobnameChunk.text
+            jw = open('jobnamefortrain.txt', 'a+')
+            jw.write(jobname)
+            jw.close()
+            listtoholdjob.append(jobname)
+
         if descriptionChunk:
             description = descriptionChunk.text
-            fw = open('descriptiondata.txt', 'a+')
+            fw = open('descriptiondatafortrain.txt', 'a+')
             for line in description:
                 newline = line.rstrip('\r\n')
                 fw.write(newline)
@@ -101,45 +117,47 @@ def run(url):
             fw.close()
 
 
-        #Date when the job was posted
-
-        dateChunk = soup.find('h3', {'id': 'job-begin-date'})
-        if dateChunk:
-            date = dateChunk.text
-            listtoholddate.append(date)
-
-        time.sleep(5)
         final_listtoholdjob = []
+        final_listtoholddescription = []
         final_listtoholddate = []
 
+        # To remove "\n" from the list
         for j in listtoholdjob:
             final_listtoholdjob.append(j.strip())
 
+        #This part has to be worked on
+        while "\n" in listtoholddescription:
+            listtoholddescription.remove("\n")
+        #listtoholddescription=filter(lambda x: x != '\n', listtoholddescription)
+        for k in listtoholddescription:
+            final_listtoholddescription.append(k.strip())
+
+        #To remove "\n" from the list
         for v in listtoholddate:
             final_listtoholddate.append(v.strip())
 
-    rows = zip(final_listtoholdjob,listtoholdcount, final_listtoholddate)
+        #this part basically when iterated will go in form of column
+        #rows = zip(jobname,applicant,date)
+        #print(jobname,applicant,date,description)
 
-    with open('train.csv', 'a+') as outcsv:
-        #configure writer to write standard csv file
-        writer = csv.writer(outcsv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
-        #writer.writerow(['Job Title ','Total Applicant', 'Job Description', 'Date'])
-        for row in rows:
-            writer.writerow(row)
-
-    outcsv.close()
+        l=[applicant,date]
+        with open('traintest.csv', 'a+') as outcsv: # opening the csv file to push data
+            #configure writer to write standard csv file
+            writer = csv.writer(outcsv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+            #writer.writerow(['Job Title ','Total Applicant', 'Job Description', 'Date'])
+         #   for row in rows:
+          #      writer.writerow(row)
+            writer.writerow(l)
+        outcsv.close() #close the csv file
 
         #fw.write(jobname + applicant + date + description +'\n')
-    time.sleep(2)
+     # sleep to scrape without website blocking
     #fw.close()
     endtime = time.time()
     total_time = (endtime - starttime)
     total_time = (total_time / 3600)
-    print("Total time to execute the script in hours is:", total_time)
+    print("Total time to execute the script in hours is:", total_time) # Total time taken to run the entire script
 
 if __name__ == "__main__":
-    url = "http://www.careerbuilder.com/jobs-analyst?page_number="
+    url = "http://www.careerbuilder.com/jobs-analyst-in-jersey-city?page_number="
     run(url)
-
-
-#Note: Because I have put the links in a set, it will be randomly selected
