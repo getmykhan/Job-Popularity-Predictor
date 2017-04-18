@@ -12,7 +12,7 @@ def run(url):
     starttime = time.time()
     dictio=set() #hold all the links scraped.
     listo = [] #holds all the links scraped.
-    pagenumber = 1 #number of pages to scrape
+    pagenumber = 410 #number of pages to scrape
 
 
     for page in range(1 ,pagenumber + 1):
