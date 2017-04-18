@@ -11,7 +11,7 @@ import csv
 def run(url):
     starttime = time.time()
     dictio=set() #hold all the links scraped.
-    listo = []
+    listo = [] #holds all the links scraped.
     pagenumber = 1 #number of pages to scrape
 
 
@@ -19,7 +19,6 @@ def run(url):
         print ('page',page)
 
         html=None
-        print(url)
         pageLink=url + str(page)
 
 
@@ -140,24 +139,24 @@ def run(url):
         #rows = zip(jobname,applicant,date)
         #print(jobname,applicant,date,description)
 
-        l=[applicant,date]
+        l = [applicant,date] # iterating through a list
         with open('traintest.csv', 'a+') as outcsv: # opening the csv file to push data
             #configure writer to write standard csv file
             writer = csv.writer(outcsv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
             #writer.writerow(['Job Title ','Total Applicant', 'Job Description', 'Date'])
-         #   for row in rows:
-          #      writer.writerow(row)
+            #for row in rows:
+                #writer.writerow(row)
             writer.writerow(l)
         outcsv.close() #close the csv file
 
         #fw.write(jobname + applicant + date + description +'\n')
-     # sleep to scrape without website blocking
     #fw.close()
+
     endtime = time.time()
     total_time = (endtime - starttime)
     total_time = (total_time / 3600)
     print("Total time to execute the script in hours is:", total_time) # Total time taken to run the entire script
 
 if __name__ == "__main__":
-    url = "http://www.careerbuilder.com/jobs-analyst-in-jersey-city?page_number="
+    url = "http://www.careerbuilder.com/jobs-analyst?page_number="
     run(url)
