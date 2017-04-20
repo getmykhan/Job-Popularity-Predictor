@@ -51,7 +51,7 @@ def run(url):
                 #print(dictio)
             #fw.write(test+'\t')
 
-            time.sleep(2)
+            #time.sleep(2)
 
     #fw = open('traindata.txt', 'a+') #testdata file in read/write mode
     url = "http://www.careerbuilder.com"
