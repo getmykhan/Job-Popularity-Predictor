@@ -12,7 +12,7 @@ def run(url):
     starttime = time.time()
     dictio=set() #hold all the links scraped.
     listo = [] #holds all the links scraped.
-    pagenumber = 410 #number of pages to scrape
+    pagenumber = 1 #number of pages to scrape
 
 
     for page in range(1 ,pagenumber + 1):
@@ -92,6 +92,11 @@ def run(url):
             d = {"Posted 10 days ago":10, "Posted 11 days ago":11,"Posted 12 days ago":12,"Posted 13 days ago":13,"Posted 14 days ago":14,"Posted 15 days ago":15,"Posted 16 days ago":16,"Posted 17 days ago":17,"Posted 18 days ago":18,"Posted 19 days ago":19,"Posted 20 days ago":20,"Posted 21 days ago":21,"Posted 22 days ago":22,"Posted 23 days ago":23,"Posted 24 days ago":24,"Posted 25 days ago":25,"Posted 26 days ago":26,"Posted 27 days ago":27,"Posted 28 days ago":28,"Posted 29 days ago":29,"Posted 30 days ago":30}
             if d.get(date):
                 date=d.get(date)
+                #print(applicant)
+                print(date)
+                if applicant == '75+':
+                    continue
+                print(applicant)
                 applicant = (int(applicant) // int(date))
             else:
                 continue
@@ -158,5 +163,5 @@ def run(url):
     print("Total time to execute the script in hours is:", total_time) # Total time taken to run the entire script
 
 if __name__ == "__main__":
-    url = "http://www.careerbuilder.com/jobs-analyst?page_number="
+    url = "http://www.careerbuilder.com/jobs-developer?page_number="
     run(url)
